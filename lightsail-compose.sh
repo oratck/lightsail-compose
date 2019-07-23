@@ -4,11 +4,12 @@
 curl -sSL https://get.docker.com | sh
 
 # make it so you don't need to sudo to run docker commands
-usermod -aG docker centos
+usermod -aG docker root
 
 # install docker-compose
 curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
+mv /usr/local/bin/docker-compose /usr/bin/docker-compose
+chmod +x /usr/bin/docker-compose
 
 # copy the dockerfile into /srv/docker 
 # if you change this, change the systemd service file to match
@@ -18,8 +19,8 @@ curl -o /srv/docker/docker-compose.yml https://raw.githubusercontent.com/oratck/
 
 # copy in systemd unit file and register it so our compose file runs 
 # on system restart
-curl -o /etc/systemd/system/docker-compose-app.service https://raw.githubusercontent.com/oratck/lightsail-compose/feature/centos/docker-compose-app.service
-systemctl enable docker-compose-app
+curl -o /etc/systemd/system/docker-compose.service https://raw.githubusercontent.com/oratck/lightsail-compose/feature/centos/docker-compose.service
+systemctl enable docker-compose
 
 # start up the application via docker-compose
 docker-compose -f /srv/docker/docker-compose.yml up -d
